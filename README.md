@@ -65,4 +65,4 @@ The slides quote the numbers in `demo/output/`, through `docs/report_tables.py`,
 | `demo/` | Demos 1-3 (`common.py` attaches the file and writes the reports), `mcp/` for demos 4-5, `output/` for the reports |
 | `tests/` | Reruns demos 1-2 against `demo/output/`, checks demo 3 agrees across engines, rebuilds the sample, smoke-tests the MCP script |
 | `.github/workflows/ci.yml` | ruff and pytest with uv. In CI the MCP smoke test must run, not skip |
-| `docs/` | `make_deck.py` builds `DuckDB_MCP.pptx` (19 slides, speaker notes) from the reports in `demo/output/`. `guide/`: [technical guide](docs/guide/Technical_Guide_EN.md), [demo guide](docs/guide/Demo_Guide_EN.md), [presenter guide](docs/guide/Presenter_Guide_EN.md) |
+| `docs/` | `make_deck.py` builds `DuckDB_MCP.pptx` (19 slides, speaker notes) from the reports in `demo/output/`. `guide/`: [technical guide](docs/guide/Technical_Guide_EN.md), [demo guide](docs/guide/Demo_Guide_EN.md), [presenter guide](docs/guide/Presenter_Guide_EN.md); in Spanish: [guía técnica](docs/guide/Guia_Tecnica_ES.md), [guía de las demos](docs/guide/Guia_Demos_ES.md), [guía del presentador](docs/guide/Guia_Presentador_ES.md) |
