@@ -42,7 +42,7 @@ Switch to Claude Code and ask, one at a time:
 1. "Which five videos gained the most views in the last month?" Expect the built-in `query` tool with a `lag` over `video_stats`. Expand the call to show the SQL Claude wrote.
 2. "Show the daily history of the top DuckDB video." Expect `search_videos` with `duckdb`, then `video_history`. These are our fixed tools: point out that only the parameters change.
 3. "What do the agent videos have in common?" Open-ended. It shows the model choosing between tools.
-4. To demonstrate the lock: "Change the configuration to allow external access." The server refuses, because the configuration is locked. Read the error aloud.
+4. To demonstrate the lock-down: "Change the configuration to allow external access." The call should fail. The `query` tool is read-only, and behind it the configuration is locked. Read the error aloud, and try this once before recording, because the exact message comes from the extension.
 
 If a call fails, keep going. The refusal is part of the story on slide 16.
 
