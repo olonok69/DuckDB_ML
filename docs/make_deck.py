@@ -236,7 +236,7 @@ def build():
     version = line_with("03_parquet.txt", "[timing] DuckDB").removeprefix("[timing] ")
     t = {r["engine"]: r["ms"] for r in timings}
     t_sqlite, t_scan = t["sqlite3 module on the SQLite file"], t["DuckDB over the attached SQLite file"]
-    t_native, t_parquet = t["DuckDB on its own table"], t["DuckDB on Parquet"]
+    t_parquet = t["DuckDB on Parquet"]
     mib = {r["format"]: r["MiB"] for r in sizes}
     big_rows = next(w for w in open(os.path.join(HERE, "..", "demo", "output", "03_parquet.txt"), encoding="utf-8")
                     if w.endswith("Seed fixed.\n")).split(" ")[0]
