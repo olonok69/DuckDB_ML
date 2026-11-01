@@ -5,7 +5,8 @@ runs small and only checks that every engine agrees; its sizes and timings depen
 on the machine and the DuckDB version.
 """
 
-import hashlib
+import difflib
+import sqlite3
 import subprocess
 import sys
 from pathlib import Path
@@ -18,8 +19,9 @@ EXPECTED = DEMO / "output"
 
 
 def run(script: str, tmp_path: Path, *extra: str) -> str:
-    subprocess.run([sys.executable, str(DEMO / script), "--out", str(tmp_path), *extra],
-                   check=True, cwd=DEMO, capture_output=True, text=True)
+    done = subprocess.run([sys.executable, str(DEMO / script), "--out", str(tmp_path), *extra],
+                          cwd=DEMO, capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
     name = script.removeprefix("run_").removesuffix(".py") + ".txt"
     return (tmp_path / name).read_text(encoding="utf-8")
 
@@ -27,7 +29,9 @@ def run(script: str, tmp_path: Path, *extra: str) -> str:
 @pytest.mark.parametrize("script", ["run_01_attach_sqlite.py", "run_02_analytics.py"])
 def test_report_matches_committed_output(script, tmp_path):
     name = script.removeprefix("run_").removesuffix(".py") + ".txt"
-    assert run(script, tmp_path) == (EXPECTED / name).read_text(encoding="utf-8")
+    got, want = run(script, tmp_path), (EXPECTED / name).read_text(encoding="utf-8")
+    diff = "".join(difflib.unified_diff(want.splitlines(True), got.splitlines(True), "committed", "this run"))
+    assert got == want, diff
 
 
 def test_parquet_demo_engines_agree(tmp_path):
@@ -41,5 +45,13 @@ def test_sample_is_reproducible(tmp_path):
     import make_sample
 
     rebuilt = make_sample.build(tmp_path / "sample.sqlite3")
-    digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()  # noqa: E731
-    assert digest(rebuilt) == digest(ROOT / "data" / "sample.sqlite3")
+
+    # Compare the SQL dump, not the bytes: the file layout depends on the SQLite version.
+    def dump(path):
+        con = sqlite3.connect(path)
+        try:
+            return list(con.iterdump())
+        finally:
+            con.close()
+
+    assert dump(rebuilt) == dump(ROOT / "data" / "sample.sqlite3")

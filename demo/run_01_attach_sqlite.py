@@ -23,7 +23,7 @@ def main() -> None:
                     "WHERE NOT internal ORDER BY database_name"))
 
     r.section("2. The tables youtube_ML writes")
-    counts = [(t, con.sql(f"SELECT count(*) FROM yt.{t}").fetchone()[0]) for t in CATALOG]
+    counts = [(t, con.execute(f"SELECT count(*) FROM yt.{t}").fetchone()[0]) for t in CATALOG]
     r.table(counts, ["table", "rows"])
 
     r.section("3. How DuckDB types the SQLite columns")

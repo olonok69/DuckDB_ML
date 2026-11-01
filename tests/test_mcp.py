@@ -35,7 +35,7 @@ def test_server_script_until_start(monkeypatch):
     for statement in statements[:-1]:
         con.execute(statement)
 
-    assert con.sql("SELECT count(*) FROM videos").fetchone()[0] > 0
+    assert con.execute("SELECT count(*) FROM videos").fetchone()[0] > 0
     # The configuration is locked: a later SET is refused.
     with pytest.raises(duckdb.Error):
         con.execute("SET enable_external_access = true")
