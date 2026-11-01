@@ -464,7 +464,7 @@ USING count(*) GROUP BY year
     d.bars(s, LEFT, 2.15, 7.6, 3.7, [r["engine"] for r in timings], [r["ms"] for r in timings], "ms", highlight=[2, 3])
     d.card(s, LEFT + 8.0, 2.3, 3.55, 3.4, "Read it this way", f"DuckDB over the SQLite file is already {t_sqlite / t_scan:.0f}x "
            "faster than SQLite itself: same file, better engine. Columnar storage adds the rest.", tsize=18, bsize=14.5)
-    d.footer(s, f"Best of 3, machine-dependent, so the tests ignore these. {version}.")
+    d.footer(s, f"Best of 3 on a GitHub Actions runner; machine-dependent, so the tests ignore them. {version}.")
     d.notes(s, "The question is views and likes per year over the two million rows. The Python sqlite3 module is the "
             "baseline. DuckDB scanning the same SQLite file is the second bar: same storage, DuckDB's engine. The last two "
             "read only the four columns the query needs, from DuckDB's own table and from Parquet. All four engines return "

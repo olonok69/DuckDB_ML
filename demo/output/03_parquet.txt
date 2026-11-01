@@ -45,12 +45,12 @@ Parquet, zstd (columnar)  13.50
 
 4. Timings, best of 3 (machine-dependent) [timing]
 --------------------------------------------------
-[timing] DuckDB 1.5.5, Python sqlite3 3.53.1
+[timing] DuckDB 2.0.0, Python sqlite3 3.45.1
 engine                                      ms
 ------------------------------------  --------
-sqlite3 module on the SQLite file     1,346.00
-DuckDB over the attached SQLite file    136.90
-DuckDB on its own table                  41.70
-DuckDB on Parquet                        45.10
+sqlite3 module on the SQLite file     1,267.00
+DuckDB over the attached SQLite file    175.60
+DuckDB on its own table                  39.00
+DuckDB on Parquet                        54.80
 (4 rows)
 [timing] The SQLite scanner reads rows; DuckDB's own table and Parquet read only the four columns used.
