@@ -1,0 +1,39 @@
+[project]
+name = "duckdb-ml"
+version = "0.1.0"
+description = "DuckDB 2.0 and its MCP server on the YouTube channel data that youtube_ML stores in SQLite."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=2.0,<3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.6.0",
+]
+docs = [
+    "python-pptx>=1.0",
+    "cairosvg>=2.7",
+    "Pillow>=10",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+# The demos print long SQL and report lines verbatim.
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["common"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["demo"]

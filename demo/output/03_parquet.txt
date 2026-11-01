@@ -1,0 +1,56 @@
+Demo 3: SQLite, DuckDB and Parquet on the same table
+====================================================
+
+1. A larger stats table, written to SQLite by DuckDB
+----------------------------------------------------
+2,000,000 daily rows, spread over the sample's videos and the years 2023 to 2026. Seed fixed.
+
+    CREATE TABLE big.videostats AS
+    SELECT row_number() OVER () AS id,
+           DATE '2023-01-01' + (i % 1400)::INTEGER AS taken_on,
+           (hash(i) % 100000)::BIGINT AS view_count,
+           (hash(i * 7) % 4000)::BIGINT AS like_count,
+           (hash(i * 13) % 600)::BIGINT AS comment_count,
+           v.id AS video_id
+    FROM range(2000000) t(i)
+    JOIN (SELECT id, row_number() OVER (ORDER BY id) - 1 AS n FROM yt.catalog_video) v
+      ON v.n = i % (SELECT count(*) FROM yt.catalog_video)
+
+
+2. The question
+---------------
+
+    SELECT year(taken_on::DATE) AS year, count(*) AS rows, sum(view_count) AS views, avg(like_count) AS avg_likes
+    FROM videostats
+    GROUP BY ALL
+    ORDER BY year
+
+All four engines return the same years, row counts and view sums: yes
+year     rows           views  avg_likes
+----  -------  --------------  ---------
+2023  521,585  26,055,640,099   1,998.91
+2024  523,014  26,136,147,305   1,996.09
+2025  521,289  26,065,373,484   1,997.93
+2026  434,112  21,692,031,148   2,000.00
+(4 rows)
+
+3. Sizes on disk
+----------------
+format                      MiB
+------------------------  -----
+SQLite (row store)        83.40
+DuckDB file (columnar)    18.30
+Parquet, zstd (columnar)  13.50
+(3 rows)
+
+4. Timings, best of 3 (machine-dependent) [timing]
+--------------------------------------------------
+[timing] DuckDB 1.5.5, Python sqlite3 3.53.1
+engine                                      ms
+------------------------------------  --------
+sqlite3 module on the SQLite file     1,346.00
+DuckDB over the attached SQLite file    136.90
+DuckDB on its own table                  41.70
+DuckDB on Parquet                        45.10
+(4 rows)
+[timing] The SQLite scanner reads rows; DuckDB's own table and Parquet read only the four columns used.

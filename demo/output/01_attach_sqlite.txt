@@ -1,0 +1,81 @@
+Demo 1: DuckDB reads the SQLite file in place
+=============================================
+
+1. Attach
+---------
+
+    INSTALL sqlite; LOAD sqlite;
+    ATTACH 'db.sqlite3' AS yt (TYPE sqlite, READ_ONLY);
+
+database_name  type    readonly
+-------------  ------  --------
+memory         duckdb  false
+yt             sqlite  true
+(2 rows)
+
+2. The tables youtube_ML writes
+-------------------------------
+table                      rows
+-----------------------  ------
+catalog_channel               1
+catalog_channelsnapshot      90
+catalog_video               120
+catalog_videostats       10,800
+catalog_playlist              8
+catalog_playlistitem        120
+(6 rows)
+
+3. How DuckDB types the SQLite columns
+--------------------------------------
+SQLite stores almost everything as text or integer. The scanner maps the declared types:
+column_name       column_type
+----------------  -----------
+id                VARCHAR
+published         TIMESTAMP
+duration_seconds  BIGINT
+caption           BIGINT
+tags              VARCHAR
+(5 rows)
+
+4. Plain SQL over the attached file
+-----------------------------------
+
+    SELECT title,
+           published::DATE                    AS published,
+           duration_seconds // 60             AS minutes,
+           from_json(tags, '["VARCHAR"]')     AS tags
+    FROM yt.catalog_video
+    ORDER BY published DESC
+    LIMIT 5
+
+title                     published   minutes  tags
+------------------------  ----------  -------  -----------------------------------------
+Intro to Computer Vision  2026-05-26        6  [vision, pytorch, yolo]
+MLOps demo                2026-05-19       21  [mlops, docker, ci, ai, open-source]
+Computer Vision tips      2026-05-06        7  [vision, pytorch, yolo, open-source]
+Intro to Agents #117      2026-04-23        0  [agents, mcp, tools, open-source, python]
+Computer Vision demo      2026-04-17       10  [vision, pytorch, yolo]
+(5 rows)
+
+5. Join across tables
+---------------------
+
+    SELECT p.title AS playlist, count(*) AS videos,
+           min(v.published)::DATE AS first, max(v.published)::DATE AS last
+    FROM yt.catalog_playlist p
+    JOIN yt.catalog_playlistitem i ON i.playlist_id = p.id
+    JOIN yt.catalog_video v ON v.id = i.video_id
+    GROUP BY ALL
+    ORDER BY videos DESC, playlist
+
+playlist         videos  first       last
+---------------  ------  ----------  ----------
+Claude Code          22  2023-05-06  2026-02-06
+Computer Vision      19  2023-01-19  2026-05-26
+MLOps                19  2023-02-15  2026-05-19
+DuckDB               18  2023-02-03  2025-10-30
+Agents               16  2023-01-09  2026-04-23
+Python               12  2023-07-18  2025-08-03
+LLM                  10  2023-01-26  2026-01-23
+Security              4  2023-04-03  2026-03-08
+(8 rows)

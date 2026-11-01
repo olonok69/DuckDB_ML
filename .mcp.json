@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "youtube-duckdb": {
+      "command": "duckdb",
+      "args": ["-init", "demo/mcp/init-server.sql"]
+    }
+  }
+}
