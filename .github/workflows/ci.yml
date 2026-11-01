@@ -22,3 +22,7 @@ jobs:
         run: uv run ruff check .
       - name: Tests (demos 1-3 on the sample, demo 4 smoke test)
         run: uv run pytest -q
+      - name: Demo 3 at full size on DuckDB 2.0 (numbers for the deck, printed below)
+        run: uv run python demo/run_03_parquet.py
+      - name: The deck builds from the reports
+        run: uv run --group docs python docs/make_deck.py

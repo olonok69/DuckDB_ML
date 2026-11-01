@@ -49,6 +49,14 @@ Install the [DuckDB CLI](https://duckdb.org/docs/installation/) so `duckdb` is o
 
 Try: "Which five videos gained the most views last month?" or "Show me the daily history of the top DuckDB video."
 
+## The deck
+
+```text
+uv run --group docs python docs/make_deck.py
+```
+
+The slides quote the numbers in `demo/output/`, through `docs/report_tables.py`, so rerunning a demo and then the deck keeps them in step.
+
 ## Layout
 
 | Path | Role |
@@ -57,4 +65,4 @@ Try: "Which five videos gained the most views last month?" or "Show me the daily
 | `demo/` | Demos 1-3 (`common.py` attaches the file and writes the reports), `mcp/` for demos 4-5, `output/` for the reports |
 | `tests/` | Reruns demos 1-2 against `demo/output/`, checks demo 3 agrees across engines, rebuilds the sample, smoke-tests the MCP script |
 | `.github/workflows/ci.yml` | ruff and pytest with uv. In CI the MCP smoke test must run, not skip |
-| `docs/` | The deck and the guides (to come) |
+| `docs/` | `make_deck.py` builds `DuckDB_MCP.pptx` (19 slides, speaker notes) from the reports in `demo/output/`; guides to come |
